@@ -61,35 +61,52 @@ public class PlayerController : MonoBehaviour
 
         //jump - check if space pressed - check if grounded
         
-        if (isGrounded == true && Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
         {
             jumpTimeCounter = jumpTime;
             isJumping = true;
             rBody.velocity = Vector2.up * jumpForce;
+            playerAnimator.SetTrigger("JumpStart");
+            playerAnimator.SetBool("IsSneaky", false);
         }
+
+        if (isGrounded == true)
+        {
+            playerAnimator.SetBool("IsJumping", false);
+        }
+        else
+        {
+            playerAnimator.SetBool("IsJumping", true);
+        }
+
         if (Input.GetKey(KeyCode.Space) && isJumping == true) 
         {
             if (jumpTimeCounter > 0)
             {
                 rBody.velocity = Vector2.up * jumpForce;
                 jumpTimeCounter -= Time.deltaTime;
-                playerAnimator.SetBool("IsJumping", true);
             }
             else
             {
                 isJumping = false;
-                playerAnimator.SetBool("IsJumping", false);
             }
         }
         if (Input.GetKeyUp(KeyCode.Space)) 
         {
             isJumping = false;
         }
-        #endregion
-        #region AnimationControl
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            playerAnimator.SetBool("IsSneaky", true);
+        }
+            #endregion
+
+            #region AnimationControl
+
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
         {
             playerAnimator.SetBool("IsRunning", true);
+            playerAnimator.SetBool("IsSneaky", false);
         }
         else if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
         {
