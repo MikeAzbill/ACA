@@ -21,6 +21,9 @@ public class PlayerController : MonoBehaviour
     private bool isJumping;
     private float jumpTimeCounter;
 
+    //sneak bool
+    private bool currentlyStealth;
+
     //components
     private Rigidbody2D rBody;
     private GameObject player;
@@ -55,7 +58,7 @@ public class PlayerController : MonoBehaviour
     //Animation
     void Update()
     {
-        #region JumpCode
+        #region Jump/StealthCode
         //check if grounded
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, whatIsGround);
 
@@ -68,6 +71,7 @@ public class PlayerController : MonoBehaviour
             rBody.velocity = Vector2.up * jumpForce;
             playerAnimator.SetTrigger("JumpStart");
             playerAnimator.SetBool("IsSneaky", false);
+            currentlyStealth = false;
         }
 
         if (isGrounded == true)
@@ -95,18 +99,26 @@ public class PlayerController : MonoBehaviour
         {
             isJumping = false;
         }
+
+        //stealth mode code
         if (Input.GetKeyDown(KeyCode.C))
         {
             playerAnimator.SetBool("IsSneaky", true);
+
+            if (!currentlyStealth)
+            {
+                StartSneak();
+            }
         }
             #endregion
 
-            #region AnimationControl
+        #region AnimationControl
 
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
         {
             playerAnimator.SetBool("IsRunning", true);
             playerAnimator.SetBool("IsSneaky", false);
+            currentlyStealth = false;
         }
         else if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
         {
@@ -121,5 +133,10 @@ public class PlayerController : MonoBehaviour
         Vector3 Scaler = transform.localScale;
         Scaler.x *= -1;
         transform.localScale = Scaler;
+    }
+    void StartSneak()
+    {
+        currentlyStealth = true;
+        playerAnimator.SetTrigger("SneakyStart");
     }
 }
