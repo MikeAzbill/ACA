@@ -10,49 +10,49 @@ public class PlayerController : MonoBehaviour
     private float moveInput;
     private bool facingRight = true;
 
-    //Variables for jump mechanic and ground checks
+    //public variables for jump mechanic and ground checks
     public bool isGrounded;
     public Transform groundCheck;
     public float checkRadius;
     public LayerMask whatIsGround;
-    private float jumpTimeCounter;
     public float jumpTime;
+
+    //private variables for jump mechanic and ground checks
     private bool isJumping;
+    private float jumpTimeCounter;
 
     //components
     private Rigidbody2D rBody;
     private GameObject player;
-    public Animator playerAnimator;
+    private Animator playerAnimator;
     
 
     private void Start()
     {
         rBody = GetComponent<Rigidbody2D>();
-        player = GameObject.Find("BoxMan");
-        playerAnimator = gameObject.GetComponent<Animator>();
+        player = GameObject.Find("Player");
+        playerAnimator = player.GetComponent<Animator>();
     }
-
+    //physics
     private void FixedUpdate()
     {
         #region PlayerMovement
         //move player
         moveInput = Input.GetAxis("Horizontal");
-        Debug.Log(facingRight);
         rBody.velocity = new Vector2(moveInput * speed, rBody.velocity.y);
         //flip player when switching directions
         if (facingRight == false && moveInput > 0)
         {
             FlipPlayer();
         }
-        else if(facingRight == true && moveInput < 0)
+        else if (facingRight == true && moveInput < 0)
         {
             FlipPlayer();
         }
+        
         #endregion
-
-
     }
-
+    //Animation
     void Update()
     {
         #region JumpCode
@@ -73,10 +73,12 @@ public class PlayerController : MonoBehaviour
             {
                 rBody.velocity = Vector2.up * jumpForce;
                 jumpTimeCounter -= Time.deltaTime;
+                playerAnimator.SetBool("IsJumping", true);
             }
             else
             {
                 isJumping = false;
+                playerAnimator.SetBool("IsJumping", false);
             }
         }
         if (Input.GetKeyUp(KeyCode.Space)) 
@@ -85,23 +87,22 @@ public class PlayerController : MonoBehaviour
         }
         #endregion
         #region AnimationControl
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
         {
-            playerAnimator.Play("Running");
+            playerAnimator.SetBool("IsRunning", true);
         }
-        if (Input.GetKeyDown(KeyCode.A))
+        else if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
         {
-            playerAnimator.Play("Running");
+            playerAnimator.SetBool("IsRunning", false);
         }
         #endregion
-
     }
-
+    //Flips Player character on the X axis to the negative complement of its scale.
     void FlipPlayer()
     {
         facingRight = !facingRight;
-        Vector3 scaleVal = transform.localScale;
-        scaleVal.x *= -1;
-        transform.localScale = scaleVal;
+        Vector3 Scaler = transform.localScale;
+        Scaler.x *= -1;
+        transform.localScale = Scaler;
     }
 }
